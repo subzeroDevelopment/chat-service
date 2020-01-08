@@ -4,3 +4,5 @@ services:
         # build: .
     rethink:
         image: rethinkdb
+    rabbit:
+        image: rabbitmq
