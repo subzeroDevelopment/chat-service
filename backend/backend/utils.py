@@ -1,8 +1,9 @@
-from voluptuous import Schema,error
+from voluptuous import Schema,error,Required
 from rethinkdb import r
 import os
 
 user_schema = Schema({'user':str,'password':str})
+user_send_schema = Schema({'users':list})
 users_table = os.getenv("USERS_TABLE","users")
 
 def get_rethink():
@@ -35,3 +36,14 @@ def get_users(user):
     data = r.table(users_table).filter(r.row["user"]!=user).run(con)
     con.close()
     return data
+
+def validate_users_send(data):
+    try:
+        user_send_schema(data)
+    except error.MultipleInvalid:
+        return False
+    except error.Invalid:
+        return False
+    if len(data['users'])==0:
+        return False
+    return True

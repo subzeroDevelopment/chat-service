@@ -1,5 +1,8 @@
 from flask import Flask,request,Response
-from .utils import validate_user_post,save_user,get_users
+from .utils import (validate_user_post,
+                    save_user,get_users,
+                    validate_users_send
+                    )
 
 app = Flask(__name__)
 
@@ -28,4 +31,19 @@ def get_contacts(username):
     print(data)
     return {
         "body":list(data),
+    }
+
+@app.route("/send",methods=['POST'])
+def send_message():
+    if not request.data:
+        return {
+            "message":"invalid json request"
+        },400
+    if not validate_users_send(request.json):
+        return {
+            "message":"invalid json body"
+        },400
+
+    return {
+        "body":""
     }
