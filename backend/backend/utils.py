@@ -23,5 +23,15 @@ def validate_user_post(post_user):
 
 def save_user(user):
     con = get_rethink()
+    data = r.table(users_table).filter(r.row["user"]==user["user"]).run(con)
+    if len(list(data))!=0:
+        return False
     r.table(users_table).insert(user).run(con)
     con.close()
+    return True
+
+def get_users(user):
+    con = get_rethink()
+    data = r.table(users_table).filter(r.row["user"]!=user).run(con)
+    con.close()
+    return data
