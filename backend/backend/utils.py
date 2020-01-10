@@ -5,6 +5,8 @@ import os
 user_schema = Schema({'user':str,'password':str})
 user_send_schema = Schema({'users':list})
 users_table = os.getenv("USERS_TABLE","users")
+chat_table = os.getenv("CHAT_TABLE","chats")
+
 
 def get_rethink():
     return r.connect(
@@ -47,3 +49,20 @@ def validate_users_send(data):
     if len(data['users'])==0:
         return False
     return True
+
+def get_chat(users):
+    con = get_rethink()
+    data = r.table(chat_table).filter(lambda chat:
+        chat["users"]==sorted(users)
+    ).run(con)
+    r_data = list(data)
+    if len(r_data)==0:
+        res = r.table(chat_table).insert({
+            "users":sorted(users)
+        }).run(con)
+        con.close()
+        return res["generated_keys"][0] if res['inserted']==1 else ""
+
+    con.close()
+    return r_data[0]['id']
+

@@ -1,7 +1,8 @@
 from flask import Flask,request,Response
 from .utils import (validate_user_post,
                     save_user,get_users,
-                    validate_users_send
+                    validate_users_send,
+                    get_chat
                     )
 
 app = Flask(__name__)
@@ -43,7 +44,8 @@ def send_message():
         return {
             "message":"invalid json body"
         },400
-
+    chat_id = get_chat(request.json['users'])
+    print(chat_id)
     return {
-        "body":""
+        "chat_id":chat_id
     }
